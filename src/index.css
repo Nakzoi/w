@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-brand text-white font-sans antialiased;
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom scrollbar hide for cleaner mobile look */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
