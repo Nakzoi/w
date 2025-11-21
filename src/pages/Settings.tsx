@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -14,6 +14,7 @@ import { useTheme } from "../context/ThemeContext";
 import { Logo } from "../components/Logo";
 import { Toggle } from "../components/ui/Toggle";
 import { useSwipeNavigation } from "../hooks/useSwipeNavigation";
+import { cn } from "../lib/utils";
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function Settings() {
   const [distance, setDistance] = useState(150);
   const [ageRange, setAgeRange] = useState([18, 55]);
   const [showOnWehood, setShowOnWehood] = useState(true);
+  const [gender, setGender] = useState<"male" | "female" | "brand">("male");
   const [notifications, setNotifications] = useState({
     newWehoods: true,
     requests: true,
@@ -45,7 +47,7 @@ export default function Settings() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-white dark:bg-dark-bg flex flex-col transition-colors duration-300"
+      className="w-full h-full bg-white dark:bg-dark-bg flex flex-col transition-colors duration-300"
       initial={{ x: -300, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -300, opacity: 0 }}
@@ -53,19 +55,21 @@ export default function Settings() {
       onPanEnd={onPanEnd}
     >
       {/* Header */}
-      <div className="h-16 bg-[#F3EFEF] dark:bg-dark-card flex items-center justify-between px-4 shadow-sm sticky top-0 z-10 transition-colors duration-300">
-        <div className="w-8 text-gray-800 dark:text-white" onClick={() => navigate('/change-location')}>
+      <div className="h-16 bg-[#F3EFEF] dark:bg-dark-card flex items-center justify-between px-4 shadow-sm z-10 transition-colors duration-300 flex-shrink-0">
+        <button className="w-8 text-gray-800 dark:text-white" onClick={() => navigate('/change-location')}>
            <Compass size={28} strokeWidth={1.5} />
-        </div>
+        </button>
         <div className="text-brand">
           <SettingsIcon size={28} fill="#E9967A" className="text-brand" />
         </div>
-        <div className="w-8 text-gray-400">
-           <User size={28} fill="currentColor" className="opacity-40" />
-        </div>
+        {/* Profile Icon - Consistent with Dashboard */}
+        <button className="w-8 text-gray-400" onClick={() => navigate('/dashboard')}>
+           <User size={28} strokeWidth={2.5} className="opacity-40" />
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto pb-12">
         {/* Location */}
         <div 
           onClick={() => navigate('/change-location')}
@@ -97,10 +101,25 @@ export default function Settings() {
         {/* Gender */}
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
           <span className="text-gray-500 dark:text-gray-400 font-medium">Gender</span>
-          <div className="flex gap-4 text-gray-400">
-            <UserIcon size={24} fill="currentColor" className="text-gray-400" />
-            <UserIcon size={24} fill="currentColor" className="text-gray-400" />
-            <BadgeCheck size={24} fill="currentColor" className="text-gray-400" />
+          <div className="flex gap-6 text-gray-400">
+            <button 
+              onClick={() => setGender('male')} 
+              className={cn("transition-colors", gender === 'male' ? "text-brand" : "text-gray-400")}
+            >
+              <UserIcon size={28} fill={gender === 'male' ? "currentColor" : "none"} />
+            </button>
+            <button 
+              onClick={() => setGender('female')} 
+              className={cn("transition-colors", gender === 'female' ? "text-brand" : "text-gray-400")}
+            >
+              <UserIcon size={28} fill={gender === 'female' ? "currentColor" : "none"} />
+            </button>
+            <button 
+              onClick={() => setGender('brand')} 
+              className={cn("transition-colors", gender === 'brand' ? "text-brand" : "text-gray-400")}
+            >
+              <BadgeCheck size={28} fill={gender === 'brand' ? "currentColor" : "none"} />
+            </button>
           </div>
         </div>
 

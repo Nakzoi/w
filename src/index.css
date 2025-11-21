@@ -10,6 +10,11 @@ body {
   padding: 0;
 }
 
+/* Global Dark Mode Transition */
+html.dark body {
+  @apply bg-dark-bg text-white;
+}
+
 /* Custom scrollbar hide for cleaner mobile look */
 ::-webkit-scrollbar {
   width: 0px;

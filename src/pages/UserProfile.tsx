@@ -18,7 +18,7 @@ const PhotoSlot = ({ index, image, onAdd, onRemove, className }: PhotoSlotProps)
   <div 
     onClick={() => !image && onAdd(index)}
     className={cn(
-      "relative bg-white rounded-3xl overflow-hidden shadow-sm flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors group",
+      "relative bg-white dark:bg-dark-card rounded-3xl overflow-hidden shadow-sm flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group border border-transparent dark:border-gray-800",
       className
     )}
   >
@@ -33,7 +33,7 @@ const PhotoSlot = ({ index, image, onAdd, onRemove, className }: PhotoSlotProps)
         </button>
       </>
     ) : (
-      <Plus className="text-gray-300 w-8 h-8" strokeWidth={3} />
+      <Plus className="text-gray-300 dark:text-gray-600 w-8 h-8" strokeWidth={3} />
     )}
   </div>
 );
@@ -66,21 +66,15 @@ export default function UserProfile() {
     const file = event.target.files?.[0];
     if (file && activeSlot !== null) {
       try {
-        // Compress image before saving to state/localStorage
         const compressedBase64 = await compressImage(file);
-        
         const newPhotos = [...photos];
         newPhotos[activeSlot] = compressedBase64;
         setPhotos(newPhotos);
-        
-        // Auto-save to context immediately so it persists even if they don't click "VIEW"
         updateProfile({ photos: newPhotos });
-        
       } catch (error) {
         console.error("Error processing image", error);
         alert("Could not upload image. Please try a smaller one.");
       }
-      
       event.target.value = "";
     }
   };
@@ -94,16 +88,13 @@ export default function UserProfile() {
 
   const handleSave = () => {
     setIsSaving(true);
-    // Ensure latest state is pushed
     updateProfile({ photos, about });
-    
     setTimeout(() => {
         setIsSaving(false);
-        navigate('/profile-view');
+        navigate('/dashboard');
     }, 300);
   };
 
-  // Also auto-save 'about' on blur or change
   const handleAboutChange = (val: string) => {
       setAbout(val);
       updateProfile({ about: val });
@@ -113,7 +104,7 @@ export default function UserProfile() {
 
   return (
     <motion.div 
-      className="min-h-screen bg-[#F9F9F9] flex flex-col"
+      className="h-screen bg-[#F9F9F9] dark:bg-dark-bg flex flex-col transition-colors duration-300 overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -126,10 +117,11 @@ export default function UserProfile() {
         onChange={handleFileChange}
       />
 
-      <div className="h-16 bg-[#F3EFEF] flex items-center justify-between px-4 shadow-sm sticky top-0 z-10">
+      {/* Header */}
+      <div className="h-16 bg-[#F3EFEF] dark:bg-dark-card flex items-center justify-between px-4 shadow-sm flex-shrink-0 z-20 transition-colors duration-300">
         <button 
           onClick={() => navigate(-1)}
-          className="p-2 text-brand hover:bg-black/5 rounded-full transition-colors"
+          className="p-2 text-brand hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors"
         >
           <ArrowLeft size={24} />
         </button>
@@ -137,14 +129,15 @@ export default function UserProfile() {
         <h1 className="text-xl font-bold text-brand">{user?.username || "User name"}</h1>
         
         <button 
-          onClick={handleSave}
-          className="text-brand font-bold text-sm px-2 py-1 hover:bg-brand/10 rounded"
+          onClick={() => navigate('/profile-view')}
+          className="text-brand font-bold text-sm px-2 py-1 hover:bg-brand/10 rounded transition-colors"
         >
           VIEW
         </button>
       </div>
 
-      <div className="flex-1 px-6 py-6 flex flex-col overflow-y-auto">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="space-y-4 mb-2">
           <div className="flex gap-4 h-64">
             <PhotoSlot 
@@ -196,27 +189,29 @@ export default function UserProfile() {
             />
           </div>
           
-          <p className="text-right text-gray-500 text-xs font-medium">
+          <p className="text-right text-gray-500 dark:text-gray-400 text-xs font-medium">
             Tap + to upload photos
           </p>
         </div>
 
+        {/* About Section */}
         <div className="mt-6 mb-8">
           <h2 className="text-2xl font-bold text-brand mb-4">About</h2>
-          <div className="bg-white rounded-3xl p-4 shadow-sm h-40 relative">
+          <div className="bg-white dark:bg-dark-card rounded-3xl p-4 shadow-sm h-40 relative transition-colors duration-300 border border-transparent dark:border-gray-800">
             <textarea
               value={about}
               onChange={(e) => handleAboutChange(e.target.value.slice(0, MAX_CHARS))}
               placeholder="Write something about yourself..."
-              className="w-full h-full resize-none bg-transparent border-none focus:ring-0 text-gray-700 placeholder-gray-400 text-base p-0"
+              className="w-full h-full resize-none bg-transparent border-none focus:ring-0 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600 text-base p-0 scrollbar-hide outline-none"
             />
           </div>
-          <p className="mt-2 text-gray-500 text-sm font-medium">
+          <p className="mt-2 text-gray-500 dark:text-gray-400 text-sm font-medium text-right">
             {MAX_CHARS - about.length} characters remaining
           </p>
         </div>
 
-        <div className="mt-auto flex justify-center pb-4">
+        {/* Save Button */}
+        <div className="flex justify-center pb-8">
           <CircularButton 
             active={isComplete} 
             onClick={() => isComplete && handleSave()}

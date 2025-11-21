@@ -1,6 +1,15 @@
 import { motion } from "framer-motion";
 
-export const Logo = ({ className = "", size = 100 }: { className?: string; size?: number }) => {
+interface LogoProps {
+  className?: string;
+  size?: number;
+  color?: string; // Allow dynamic color override
+}
+
+export const Logo = ({ className = "", size = 100, color }: LogoProps) => {
+  // Default to brand color if no color provided, or inherit from text color if "currentColor"
+  const strokeColor = color || "#E9967A";
+
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
       <svg
@@ -9,11 +18,10 @@ export const Logo = ({ className = "", size = 100 }: { className?: string; size?
         viewBox="0 0 100 100"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="mb-2"
+        className="mb-0" // Removed bottom margin for better alignment in headers
       >
         {/* 
-          Updated W Logo:
-          Thick, rounded orange W shape based on the reference image.
+          W Logo
         */}
         <motion.path
           d="M 20 25 
@@ -21,8 +29,8 @@ export const Logo = ({ className = "", size = 100 }: { className?: string; size?
              L 50 40 
              L 65 75 
              L 80 25"
-          stroke="#E9967A"
-          strokeWidth="16"
+          stroke={strokeColor === "currentColor" ? "currentColor" : strokeColor}
+          strokeWidth="12" // Slightly thinner for small sizes to look cleaner
           strokeLinecap="round"
           strokeLinejoin="round"
           initial={{ pathLength: 0, opacity: 0 }}
@@ -30,8 +38,6 @@ export const Logo = ({ className = "", size = 100 }: { className?: string; size?
           transition={{ duration: 1.2, ease: "easeOut" }}
         />
       </svg>
-      {/* Text removed in some contexts, but kept here if needed for Splash. 
-          The header usually just uses the icon. */}
     </div>
   );
 };
